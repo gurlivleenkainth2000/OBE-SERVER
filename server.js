@@ -26,11 +26,11 @@ const server = require('http').createServer(app);
 const PORT = process.env.PORT || 8000;
 
 app.use(cors({
-    origin: 'http://localhost:4200',
+    origin: 'http://localhost:4202',
     credentials: true
 })); // Cross-Origin Resource Sharing (CORS) Middleware
 app.use(morgan("dev")); // HTTP Request Logger Middleware for node.js
-app.use(express.json()); // The express.json() function is a built-in middleware function in Express. It parses incoming requests with JSON payloads and is based on body-parser.
+app.use(express.json({ limit: "10mb" })); // The express.json() function is a built-in middleware function in Express. It parses incoming requests with JSON payloads and is based on body-parser.
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }));
 
@@ -61,13 +61,13 @@ mongoose.connect(process.env.MONGODB_PROD_URI, {
 });
 
 // Base Route
-app.get("/", (req, res) => {
-    res.json({
-        date: new Date(),
-        port: PORT,
-        dirName: __dirname,
-    });
-});
+// app.get("/", (req, res) => {
+//     res.json({
+//         date: new Date(),
+//         port: PORT,
+//         dirName: __dirname,
+//     });
+// });
 
 server.listen(PORT, () => console.log(`App Running On ${PORT}`));
 // app.listen(PORT, () => console.log(`App Running On ${PORT}`));
