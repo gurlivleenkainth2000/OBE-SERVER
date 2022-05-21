@@ -62,4 +62,24 @@ userRoutes.delete("/delete-user/:userId", (req, res) => {
   })
 })
 
+userRoutes.put("/change-password", async (req, res) => {
+  // const { token } = req.params;
+  const { _id, oldPassword, newPassword } = req.body;
+  
+  const user = await User.findOne({ _id });
+  if (!user) return res.status(400).json({ error: "Invalid User" });
+
+  const verifyPass = await bcrypt.compare(oldPassword, user.password);
+  if(verifyPass) {
+    const hashedPass = await bcrypt.hash(newPassword, 10);
+    const newUser = await User.findByIdAndUpdate(
+      { _id: user._id },
+      { password: hashedPass }
+    );
+    return res.status(200).json(`Password changed, ${newUser}`).end();
+  } else {
+    return res.status(400).json({ error: 'Old Pasword Incorrect' }).end()
+  }
+});
+
 module.exports = { userRoutes };

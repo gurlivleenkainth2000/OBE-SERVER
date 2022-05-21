@@ -26,7 +26,7 @@ const server = require('http').createServer(app);
 const PORT = process.env.PORT || 8000;
 
 app.use(cors({
-    origin: 'http://localhost:4202',
+    origin: process.env.ORIGIN_URL,
     credentials: true
 })); // Cross-Origin Resource Sharing (CORS) Middleware
 app.use(morgan("dev")); // HTTP Request Logger Middleware for node.js

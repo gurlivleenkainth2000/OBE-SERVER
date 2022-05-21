@@ -29,24 +29,28 @@ authRoutes.post("/login", async (req, res) => {
   }
 });
 
-// authRoutes.post('/login', (req, res) => {
-//   let { email, password } = { ...req.body };
-//   const client = ldap.createClient({
-//     url: "ldap://auth.gndec.ac.in",
-//     bindDN: `ou=people,dc=auth,dc=gndec,dc=ac,dc=in`,
-//   });
+authRoutes.post("/verify-email", async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(404).json({ message: 'This email address doesn\'t exits. Please try another email address.' }).end();
+  } else {
+    return res.status(200).json({ _id: user._id, message: 'Email Found' })
+  }
+})
 
-//   client.bind(
-//     `uid=${email},ou=people,dc=auth,dc=gndec,dc=ac,dc=in`,
-//     password,
-//     (error, response) => {
-//       if(error) {
-//         return res.status(500).json({ data: { ...error }, message: 'Error' }).end();
-//       } else {
-//         return res.status(200).json({ data: { ...response }, message: 'Successfull' }).end();
-//       }
-//     }
-//   )
-// });
+authRoutes.put("/forgot-password", async (req, res) => {
+  const { _id, newPassword } = req.body;
+  try {
+    const hashedPass = await bcrypt.hash(newPassword, 10);
+    const newUser = await User.findByIdAndUpdate(
+      { _id },
+      { password: hashedPass }
+    );
+    return res.status(200).json(`Password Reset, ${newUser}`).end();
+  } catch (error) {
+    return res.status(400).json({ error: error, message: 'Something went wrong while doing database operation.' }).end();
+  }
+});
 
 module.exports = { authRoutes };
