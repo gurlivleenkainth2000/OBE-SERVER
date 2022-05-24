@@ -2,14 +2,32 @@ const curriculumRoutes = require("express").Router();
 const { Curriculum } = require("./../models/curriculum");
 const { Term } = require("./../models/term");
 
-curriculumRoutes.get('/', async(req, res) => {
-    let curriculums = await Curriculum.find();
-    curriculums = await Promise.all(curriculums.map(async(ele) => {
+curriculumRoutes.post('/', async(req, res) => {
+    let batch;
+    const { deptName, designation, superAdmin, curriculums } = req.body;
+    if(superAdmin) {
+        batch = await Curriculum.find();
+    }
+    
+    if(!superAdmin && designation === 'HoD') {
+        batch = await Curriculum.find({
+            deptName: deptName,
+        });
+    }
+    
+    if(!superAdmin && designation !== 'HoD') {
+        batch = await Curriculum.find({
+           deptName: deptName,
+           _id: { $in: curriculums }
+        });
+    } 
+
+    batch = await Promise.all(batch?.map(async(ele) => {
         const terms = await Term.find().where('curriculumId').equals(ele._id.toString());
         ele['_doc']['terms'] = terms || [];
         return ele;
     }));
-    return res.status(200).json({ curriculums: curriculums }).end();
+    return res.status(200).json({ curriculums: batch }).end();
 });
 
 curriculumRoutes.post('/add-curriculum', async(req, res) => {

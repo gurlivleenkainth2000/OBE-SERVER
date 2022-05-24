@@ -16,7 +16,8 @@ const UserSchema = new Schema({
   dateOfJoining: { type: Date, default: null },
   dob: { type: Date, default: null },
   gender: { type: String },
-  mobile: { type: String }
+  mobile: { type: String },
+  curriculums: [{ type: String }]
 }, {
   timestamps: true,
   autoIndex: true,

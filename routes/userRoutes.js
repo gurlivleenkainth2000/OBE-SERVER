@@ -2,6 +2,18 @@ const userRoutes = require("express").Router();
 const { User } = require("./../models/user");
 const bcrypt = require('bcrypt');
 
+userRoutes.post("/", async (req, res) => {
+  const { userId, deptName, superAdmin } = req.body;
+  let users;
+
+  if(superAdmin) {
+    users = await User.find({ _id: { $ne: userId } })
+  } else {
+    users = await User.find({ _id: { $ne: userId }, department: deptName })
+  }
+  return res.status(200).json({ response: users, dateTime: new Date() }).end();
+});
+
 userRoutes.post("/add-user", async (req, res) => {
   let body = { ...req.body };
 
@@ -41,15 +53,6 @@ userRoutes.put("/update-user/:_id", (req, res) => {
       return res.status(200).json({ date: new Date(), message: "User Updated successfully", response: response }).end();
     }
   })
-});
-
-userRoutes.get("/", async (req, res) => {
-  console.log(">>> Req Query Params: ", req.query);
-  const users = await User.find({
-    '_id': { $ne: req.query.userId },
-    'department': req.query.department
-  });
-  return res.status(200).json({ response: users, dateTime: new Date() }).end();
 });
 
 userRoutes.delete("/delete-user/:userId", (req, res) => {
