@@ -26,13 +26,12 @@ const server = require('http').createServer(app);
 const PORT = process.env.PORT || 8000;
 
 app.use(cors({
-    origin: process.env.ORIGIN_URL,
     credentials: true
 })); // Cross-Origin Resource Sharing (CORS) Middleware
 app.use(morgan("dev")); // HTTP Request Logger Middleware for node.js
-app.use(express.json({ limit: "10mb" })); // The express.json() function is a built-in middleware function in Express. It parses incoming requests with JSON payloads and is based on body-parser.
+app.use(express.json({ limit: '50mb' })); // The express.json() function is a built-in middleware function in Express. It parses incoming requests with JSON payloads and is based on body-parser.
 app.use(cookieParser())
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Routes
 // app.use("/api", routes);
